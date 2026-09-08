@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EstateCRM - Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="crm-layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <!-- LOGO -->
+        <div class="logo">
+
+            <div class="logo-icon">
+                🏠
+            </div>
+
+            <div>
+                <h2>Estate<span>CRM</span></h2>
+                <small>Sales Management</small>
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+        <nav>
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link active">
+
+                <span>📊</span>
+                Dashboard
+
+            </a>
+
+
+            <a href="{{ url_for('leads') }}"
+               class="nav-link">
+
+                <span>👥</span>
+                Leads
+
+            </a>
+
+
+            <a href="{{ url_for('properties') }}"
+               class="nav-link">
+
+                <span>🏢</span>
+                Properties
+
+            </a>
+
+
+            <a href="{{ url_for('bookings') }}"
+               class="nav-link">
+
+                <span>📋</span>
+                Bookings
+
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR BOTTOM -->
+        <div class="sidebar-bottom">
+
+            <div class="help-box">
+
+                <div>💡</div>
+
+                <strong>Need Help?</strong>
+
+                <p>
+                    Manage your sales easily with EstateCRM.
+                </p>
+
+            </div>
+
+
+            <a href="{{ url_for('logout') }}"
+               class="logout-link">
+
+                🚪 Logout
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="breadcrumb">
+                    Home / Dashboard
+                </p>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+            </div>
+
+
+            <!-- PROFILE -->
+
+            <div class="profile">
+
+                <div class="notification">
+                    🔔
+                </div>
+
+
+                <div class="avatar">
+
+                    {{ name[0]|upper }}
+
+                </div>
+
+
+                <div class="profile-info">
+
+                    <strong>
+                        {{ name }}
+                    </strong>
+
+                    <small>
+                        {{ role }}
+                    </small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================
+             WELCOME CARD
+        ========================== -->
+
+        <section class="welcome-card">
+
+            <div>
+
+                <p class="welcome-small">
+                    Good morning 👋
+                </p>
+
+                <h2>
+                    Welcome back, {{ name }}!
+                </h2>
+
+                <p>
+                    Here's what's happening with your
+                    real estate sales today.
+                </p>
+
+            </div>
+
+
+            <div class="welcome-house">
+                🏠
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL LEADS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon blue">
+                    👥
+                </div>
+
+                <div>
+
+                    <p>
+                        Total Leads
+                    </p>
+
+                    <h2>
+                        {{ total_leads }}
+                    </h2>
+
+                    <span class="positive">
+                        ↗ Leads
+                    </span>
+
+                    <small>
+                        registered
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FOLLOW UPS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon orange">
+                    📅
+                </div>
+
+                <div>
+
+                    <p>
+                        Follow-ups
+                    </p>
+
+                    <h2>
+                        {{ follow_ups }}
+                    </h2>
+
+                    <span class="positive">
+                        ↗ Follow-ups
+                    </span>
+
+                    <small>
+                        scheduled
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BOOKINGS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon green">
+                    🏠
+                </div>
+
+                <div>
+
+                    <p>
+                        Bookings
+                    </p>
+
+                    <h2>
+                        {{ total_bookings }}
+                    </h2>
+
+                    <span class="positive">
+                        ↗ Confirmed
+                    </span>
+
+                    <small>
+                        bookings
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SALES VALUE -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon purple">
+                    💰
+                </div>
+
+                <div>
+
+                    <p>
+                        Sales Value
+                    </p>
+
+                    <h2>
+                        ₹{{ "{:,.0f}".format(sales_value) }}
+                    </h2>
+
+                    <span class="positive">
+                        ↗ Sales
+                    </span>
+
+                    <small>
+                        confirmed
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+                <p>
+                    Manage your CRM quickly
+                </p>
+
+            </div>
+
+
+            <div class="action-grid">
+
+
+                <!-- ADD LEAD -->
+
+                <a href="{{ url_for('leads') }}"
+                   class="action-card">
+
+                    <div class="action-icon blue">
+                        ➕
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Add New Lead
+                        </h3>
+
+                        <p>
+                            Create a new customer lead
+                        </p>
+
+                    </div>
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+
+                <!-- MANAGE LEADS -->
+
+                <a href="{{ url_for('leads') }}"
+                   class="action-card">
+
+                    <div class="action-icon orange">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Manage Leads
+                        </h3>
+
+                        <p>
+                            View and update your leads
+                        </p>
+
+                    </div>
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+
+                <!-- PROPERTIES -->
+
+                <a href="{{ url_for('properties') }}"
+                   class="action-card">
+
+                    <div class="action-icon green">
+                        🏢
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Properties
+                        </h3>
+
+                        <p>
+                            Manage property units
+                        </p>
+
+                    </div>
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+
+                <!-- BOOKINGS -->
+
+                <a href="{{ url_for('bookings') }}"
+                   class="action-card">
+
+                    <div class="action-icon purple">
+                        📋
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Bookings
+                        </h3>
+
+                        <p>
+                            View property bookings
+                        </p>
+
+                    </div>
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             RECENT ACTIVITY
+        ========================== -->
+
+        <section class="content-grid">
+
+
+            <!-- RECENT LEADS -->
+
+            <div class="recent-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Recent Leads
+                        </h2>
+
+                        <p>
+                            Latest customer enquiries
+                        </p>
+
+                    </div>
+
+                    <a href="{{ url_for('leads') }}">
+                        View All →
+                    </a>
+
+                </div>
+
+
+                {% if recent_leads %}
+
+                    {% for lead in recent_leads %}
+
+                    <div class="lead-row">
+
+                        <div class="lead-avatar">
+
+                            {{ lead["name"][0]|upper }}
+
+                        </div>
+
+
+                        <div class="lead-info">
+
+                            <strong>
+                                {{ lead["name"] }}
+                            </strong>
+
+                            <span>
+                                {{ lead["phone"] }}
+                            </span>
+
+                        </div>
+
+
+                        <span class="status">
+
+                            {{ lead["stage"] }}
+
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <p>
+                            No leads available.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- TODAY FOLLOW UPS -->
+
+            <div class="followup-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Today's Follow-ups
+                        </h2>
+
+                        <p>
+                            Customers to contact
+                        </p>
+
+                    </div>
+
+                    <a href="{{ url_for('leads') }}">
+                        View All →
+                    </a>
+
+                </div>
+
+
+                {% if upcoming_followups %}
+
+                    {% for lead in upcoming_followups %}
+
+                    <div class="followup-item">
+
+                        <div class="time">
+                            📅
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                {{ lead["name"] }}
+                            </strong>
+
+                            <p>
+                                {{ lead["phone"] }}
+                            </p>
+
+                            <small>
+                                {{ lead["follow_up_date"] }}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <p>
+                            No follow-ups scheduled.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <footer>
+
+            © 2026 EstateCRM · Real Estate Sales Management
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+</body>
+</html>

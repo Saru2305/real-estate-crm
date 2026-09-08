@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Bookings - Real Estate CRM</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='bookings.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="layout">
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            🏠 Real Estate CRM
+        </div>
+
+
+        <nav>
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+            <a href="/leads">
+                Leads
+            </a>
+
+            <a href="/properties">
+                Properties
+            </a>
+
+            <a href="/bookings"
+               class="active">
+                Bookings
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <p>{{ name }}</p>
+
+            <span>{{ role }}</span>
+
+            <a href="/logout"
+               class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="top-header">
+
+            <div>
+
+                <h1>
+                    Booking Management
+                </h1>
+
+                <p>
+                    Manage customer property bookings
+                </p>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="openBookingForm()">
+
+                + New Booking
+
+            </button>
+
+        </header>
+
+
+
+        <!-- =========================
+             FLASH MESSAGES
+        ========================== -->
+
+        {% with messages =
+        get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert {{ category }}">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- =========================
+             SUMMARY CARDS
+        ========================== -->
+
+        <section class="stats">
+
+
+            <div class="stat-card">
+
+                <span>
+                    Total Bookings
+                </span>
+
+                <h2>
+                    {{ total_bookings }}
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Total Booking Value
+                </span>
+
+                <h2>
+                    ₹{{ "{:,.0f}".format(total_value) }}
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Available Units
+                </span>
+
+                <h2>
+                    {{ properties|length }}
+                </h2>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             BOOKINGS TABLE
+        ========================== -->
+
+        <section class="table-section">
+
+
+            <div class="table-header">
+
+                <h2>
+                    Booking List
+                </h2>
+
+
+                <input
+                    type="text"
+                    id="bookingSearch"
+                    placeholder="Search bookings..."
+                    onkeyup="searchBookings()">
+
+            </div>
+
+
+
+            <div class="table-container">
+
+
+                <table id="bookingTable">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Project
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Booked By
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        {% for booking in bookings %}
+
+                        <tr class="booking-row">
+
+
+                            <td>
+                                #{{ booking.id }}
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ booking.lead_name }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                {{ booking.project_name }}
+                            </td>
+
+
+                            <td>
+                                {{ booking.unit_number }}
+                            </td>
+
+
+                            <td>
+                                {{ booking.property_type }}
+                            </td>
+
+
+                            <td>
+
+                                ₹{{ "{:,.0f}".format(
+                                booking.amount) }}
+
+                            </td>
+
+
+                            <td>
+                                {{ booking.employee_name }}
+                            </td>
+
+
+                            <td>
+                                {{ booking.booking_date }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="status confirmed">
+
+                                    {{ booking.status }}
+
+                                </span>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="empty">
+
+                                No bookings found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     NEW BOOKING MODAL
+========================== -->
+
+<div id="bookingModal"
+     class="modal">
+
+
+    <div class="modal-content">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="modal-header">
+
+            <h2>
+                Create New Booking
+            </h2>
+
+
+            <button
+                onclick="closeBookingForm()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+
+        <!-- BOOKING FORM -->
+
+        <form
+            action="/add-booking"
+            method="POST">
+
+
+            <!-- CUSTOMER -->
+
+            <label>
+                Select Customer / Lead
+            </label>
+
+
+            <select
+                name="lead_id"
+                required>
+
+                <option value="">
+                    Select Lead
+                </option>
+
+
+                {% for lead in leads %}
+
+                <option value="{{ lead.id }}">
+
+                    {{ lead.name }}
+                    - {{ lead.phone }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+
+            <!-- PROPERTY -->
+
+            <label>
+                Select Available Property
+            </label>
+
+
+            <select
+                name="property_id"
+                id="propertySelect"
+                required
+                onchange="updatePrice()">
+
+
+                <option value="">
+                    Select Property Unit
+                </option>
+
+
+                {% for property in properties %}
+
+                <option
+                    value="{{ property.id }}"
+                    data-price="{{ property.price }}">
+
+                    {{ property.project_name }}
+
+                    -
+
+                    {{ property.unit_number }}
+
+                    -
+
+                    ₹{{ "{:,.0f}".format(
+                    property.price) }}
+
+                </option>
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <!-- AMOUNT -->
+
+            <label>
+                Booking Amount
+            </label>
+
+
+            <input
+                type="number"
+                name="amount"
+                id="bookingAmount"
+                step="0.01"
+                placeholder="Booking amount"
+                required>
+
+
+
+            <!-- WARNING -->
+
+            <div class="warning">
+
+                ⚠️
+
+                After confirmation, this property
+                unit will become
+
+                <strong>
+                    Booked
+                </strong>.
+
+            </div>
+
+
+
+            <!-- BUTTONS -->
+
+            <div class="form-buttons">
+
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeBookingForm()">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn">
+
+                    Confirm Booking
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- JAVASCRIPT -->
+
+<script src="{{ url_for(
+'static',
+filename='bookings.js'
+) }}">
+</script>
+
+
+</body>
+
+</html>
+
