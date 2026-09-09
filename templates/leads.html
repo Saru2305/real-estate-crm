@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EstateCRM - Leads</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='leads.css') }}">
+</head>
+
+<body>
+
+<div class="crm-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🏠</div>
+
+            <div>
+                <h2>Estate<span>CRM</span></h2>
+                <small>Sales Management</small>
+            </div>
+        </div>
+
+        <nav>
+
+            <a href="/dashboard" class="nav-link">
+                <span>📊</span>
+                Dashboard
+            </a>
+
+            <a href="/leads" class="nav-link active">
+                <span>👥</span>
+                Leads
+            </a>
+
+            <a href="#" class="nav-link">
+                <span>🏢</span>
+                Properties
+            </a>
+
+            <a href="#" class="nav-link">
+                <span>📋</span>
+                Bookings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="help-box">
+                <div>💡</div>
+                <strong>Need Help?</strong>
+                <p>Manage your sales easily with EstateCRM.</p>
+            </div>
+
+            <a href="/logout" class="logout-link">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <p class="breadcrumb">
+                    Home / Leads
+                </p>
+
+                <h1>Lead Management</h1>
+            </div>
+
+            <div class="profile">
+
+                <div class="notification">
+                    🔔
+                </div>
+
+                <div class="avatar">
+                    {{ name[0]|upper }}
+                </div>
+
+                <div class="profile-info">
+                    <strong>{{ name }}</strong>
+                    <small>{{ role }}</small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE HEADER -->
+        <section class="lead-header">
+
+            <div>
+                <h2>All Leads</h2>
+                <p>Manage customer enquiries and follow-ups</p>
+            </div>
+
+            <button class="add-lead-btn"
+                    onclick="openLeadForm()">
+                + Add New Lead
+            </button>
+
+        </section>
+
+
+        <!-- SEARCH & FILTER -->
+        <section class="filter-card">
+
+            <div class="search-box">
+
+                <span>🔍</span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by name, phone or email..."
+                    onkeyup="searchLeads()">
+
+            </div>
+
+
+            <select id="stageFilter"
+                    onchange="filterLeads()">
+
+                <option value="all">
+                    All Stages
+                </option>
+
+                <option value="New">
+                    New
+                </option>
+
+                <option value="Contacted">
+                    Contacted
+                </option>
+
+                <option value="Site Visit">
+                    Site Visit
+                </option>
+
+                <option value="Interested">
+                    Interested
+                </option>
+
+                <option value="Negotiation">
+                    Negotiation
+                </option>
+
+                <option value="Booked">
+                    Booked
+                </option>
+
+                <option value="Lost">
+                    Lost
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- LEADS TABLE -->
+        <section class="leads-card">
+
+            <div class="table-header">
+
+                <div>
+                    <h2>Lead List</h2>
+                    <p>{{ leads|length }} leads found</p>
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table id="leadsTable">
+
+                    <thead>
+
+                    <tr>
+                        <th>Lead</th>
+                        <th>Phone</th>
+                        <th>Source</th>
+                        <th>Stage</th>
+                        <th>Assigned To</th>
+                        <th>Follow-up</th>
+                        <th>Action</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for lead in leads %}
+
+                    <tr class="lead-row-data"
+                        data-stage="{{ lead['stage'] }}">
+
+                        <td>
+
+                            <div class="customer">
+
+                                <div class="customer-avatar">
+                                    {{ lead['name'][0]|upper }}
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        {{ lead['name'] }}
+                                    </strong>
+
+                                    <small>
+                                        {{ lead['email'] or 'No email' }}
+                                    </small>
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            {{ lead['phone'] }}
+                        </td>
+
+                        <td>
+                            {{ lead['source'] or '-' }}
+                        </td>
+
+                        <td>
+
+                            <span class="stage {{ lead['stage']|lower|replace(' ', '-') }}">
+                                {{ lead['stage'] }}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ lead['employee_name'] or 'Unassigned' }}
+                        </td>
+
+                        <td>
+                            {{ lead['follow_up_date'] or '-' }}
+                        </td>
+
+                        <td>
+
+        
+<button
+    class="edit-btn"
+    onclick="openEditLead(
+        {{ lead['id'] }},
+        '{{ lead['name'] }}',
+        '{{ lead['phone'] }}',
+        '{{ lead['email'] or '' }}',
+        '{{ lead['source'] or '' }}',
+        '{{ lead['stage'] }}',
+        '{{ lead['assigned_to'] or '' }}',
+        '{{ lead['notes'] or '' }}',
+        '{{ lead['follow_up_date'] or '' }}'
+    )">
+    ✏️ Edit
+</button>
+
+
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="7"
+                            class="empty-state">
+
+                            <div>👥</div>
+
+                            <h3>No leads found</h3>
+
+                            <p>Add your first customer lead.</p>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+            © 2026 EstateCRM · Real Estate Sales Management
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- ADD LEAD MODAL -->
+
+<div class="modal"
+     id="leadModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add New Lead</h2>
+                <p>Enter customer details</p>
+            </div>
+
+            <button onclick="closeLeadForm()">
+                ✕
+            </button>
+
+        </div>
+
+
+        <form action="/add-lead"
+              method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Customer Name</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter customer name"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone Number</label>
+
+                    <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Enter phone number"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Lead Source</label>
+
+                    <select name="source">
+
+                        <option value="">
+                            Select source
+                        </option>
+
+                        <option value="Website">
+                            Website
+                        </option>
+
+                        <option value="Walk-in">
+                            Walk-in
+                        </option>
+
+                        <option value="Referral">
+                            Referral
+                        </option>
+
+                        <option value="Advertisement">
+                            Advertisement
+                        </option>
+
+                        <option value="Social Media">
+                            Social Media
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Assign Sales Employee</label>
+
+                    <select name="assigned_to">
+
+                        <option value="">
+                            Select employee
+                        </option>
+
+                        {% for employee in employees %}
+
+                        <option value="{{ employee['id'] }}">
+                            {{ employee['name'] }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Follow-up Date</label>
+
+                    <input
+                        type="date"
+                        name="follow_up_date">
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Notes</label>
+
+                <textarea
+                    name="notes"
+                    rows="4"
+                    placeholder="Add notes about this customer..."></textarea>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="button"
+                        class="cancel-btn"
+                        onclick="closeLeadForm()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="save-btn">
+                    Save Lead
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="{{ url_for('static', filename='leads.js') }}"></script>
+<!-- EDIT LEAD MODAL -->
+
+<div id="editLeadModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Edit Lead</h2>
+                <p>Update customer information</p>
+            </div>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeEditLead()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="editLeadForm" method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Customer Name *</label>
+
+                    <input
+                        type="text"
+                        id="editName"
+                        name="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone *</label>
+
+                    <input
+                        type="text"
+                        id="editPhone"
+                        name="phone"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="editEmail"
+                        name="email"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Source</label>
+
+                    <select id="editSource" name="source">
+
+                        <option value="">Select Source</option>
+                        <option value="Website">Website</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="Referral">Referral</option>
+                        <option value="Walk-in">Walk-in</option>
+                        <option value="Advertisement">Advertisement</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Lead Stage *</label>
+
+                    <select id="editStage" name="stage" required>
+
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Site Visit">Site Visit</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Negotiation">Negotiation</option>
+                        <option value="Booked">Booked</option>
+                        <option value="Lost">Lost</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Assign Employee</label>
+
+                    <select id="editAssigned" name="assigned_to">
+
+                        <option value="">Unassigned</option>
+
+                        {% for employee in employees %}
+
+                        <option value="{{ employee['id'] }}">
+                            {{ employee['name'] }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Follow-up Date</label>
+
+                    <input
+                        type="date"
+                        id="editFollowUp"
+                        name="follow_up_date"
+                    >
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label>Notes</label>
+
+                    <textarea
+                        id="editNotes"
+                        name="notes"
+                        rows="4"
+                        placeholder="Add notes..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeEditLead()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-btn">
+                    Update Lead
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

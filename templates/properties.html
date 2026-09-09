@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EstateCRM - Properties</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='properties.css') }}">
+</head>
+
+<body>
+
+<div class="crm-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">🏠</div>
+
+            <div>
+                <h2>Estate<span>CRM</span></h2>
+                <small>Sales Management</small>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/dashboard" class="nav-link">
+                <span>📊</span>
+                Dashboard
+            </a>
+
+            <a href="/leads" class="nav-link">
+                <span>👥</span>
+                Leads
+            </a>
+
+            <a href="/properties" class="nav-link active">
+                <span>🏢</span>
+                Properties
+            </a>
+
+            <a href="#" class="nav-link">
+                <span>📋</span>
+                Bookings
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="help-box">
+                <div>💡</div>
+                <strong>Need Help?</strong>
+                <p>Manage your sales easily with EstateCRM.</p>
+            </div>
+
+            <a href="/logout" class="logout-link">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="breadcrumb">
+                    Home / Properties
+                </p>
+
+                <h1>Property Management</h1>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div class="notification">
+                    🔔
+                </div>
+
+                <div class="avatar">
+                    {{ name[0]|upper }}
+                </div>
+
+                <div class="profile-info">
+
+                    <strong>{{ name }}</strong>
+
+                    <small>{{ role }}</small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- HEADER -->
+
+        <section class="property-header">
+
+            <div>
+
+                <h2>Properties</h2>
+
+                <p>
+                    Manage projects, buildings and property units
+                </p>
+
+            </div>
+
+
+            <button class="add-property-btn"
+                    onclick="openPropertyForm()">
+
+                + Add Property
+
+            </button>
+
+        </section>
+
+
+        <!-- SUMMARY -->
+
+        <section class="property-summary">
+
+            <div class="property-stat">
+
+                <div class="property-stat-icon blue">
+                    🏢
+                </div>
+
+                <div>
+
+                    <span>Total Units</span>
+
+                    <strong>
+                        {{ properties|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="property-stat">
+
+                <div class="property-stat-icon green">
+                    🟢
+                </div>
+
+                <div>
+
+                    <span>Available</span>
+
+                    <strong id="availableCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="property-stat">
+
+                <div class="property-stat-icon red">
+                    🔴
+                </div>
+
+                <div>
+
+                    <span>Booked</span>
+
+                    <strong id="bookedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SEARCH -->
+
+        <section class="property-filter">
+
+            <div class="property-search">
+
+                🔍
+
+                <input
+                    type="text"
+                    id="propertySearch"
+                    placeholder="Search project, building or unit..."
+                    onkeyup="searchProperties()">
+
+            </div>
+
+
+            <select id="propertyStatus"
+                    onchange="filterProperties()">
+
+                <option value="all">
+                    All Status
+                </option>
+
+                <option value="Available">
+                    Available
+                </option>
+
+                <option value="Booked">
+                    Booked
+                </option>
+
+            </select>
+
+
+            <select id="propertyType"
+                    onchange="filterProperties()">
+
+                <option value="all">
+                    All Types
+                </option>
+
+                <option value="Apartment">
+                    Apartment
+                </option>
+
+                <option value="Villa">
+                    Villa
+                </option>
+
+                <option value="Plot">
+                    Plot
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- PROPERTY TABLE -->
+
+        <section class="properties-card">
+
+            <div class="properties-card-header">
+
+                <div>
+
+                    <h2>Property Units</h2>
+
+                    <p>
+                        Available and booked property units
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="property-table-container">
+
+                <table id="propertyTable">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Project</th>
+
+                        <th>Building</th>
+
+                        <th>Unit</th>
+
+                        <th>Type</th>
+
+                        <th>Price</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for property in properties %}
+
+                    <tr class="property-row"
+                        data-status="{{ property['status'] }}"
+                        data-type="{{ property['property_type'] }}">
+
+                        <td>
+                            <strong>
+                                {{ property['project_name'] }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ property['building_name'] or '-' }}
+                        </td>
+
+                        <td>
+
+                            <span class="unit-number">
+                                {{ property['unit_number'] }}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ property['property_type'] }}
+                        </td>
+
+                        <td>
+
+                            ₹{{ "{:,.0f}".format(property['price']) }}
+
+                        </td>
+
+                        <td>
+
+                            {% if property['status'] == 'Available' %}
+
+                            <span class="property-status available">
+                                🟢 Available
+                            </span>
+
+                            {% else %}
+
+                            <span class="property-status booked">
+                                🔴 Booked
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="property-empty">
+
+                            <div>🏢</div>
+
+                            <h3>No properties found</h3>
+
+                            <p>
+                                Add your first property unit.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+            © 2026 EstateCRM · Real Estate Sales Management
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- ADD PROPERTY MODAL -->
+
+<div class="property-modal"
+     id="propertyModal">
+
+    <div class="property-modal-content">
+
+
+        <div class="property-modal-header">
+
+            <div>
+
+                <h2>Add Property</h2>
+
+                <p>
+                    Add a new property unit
+                </p>
+
+            </div>
+
+
+            <button onclick="closePropertyForm()">
+                ✕
+            </button>
+
+        </div>
+
+
+        <form action="/add-property"
+              method="POST">
+
+
+            <div class="property-form-grid">
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Project Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="project_name"
+                        placeholder="Example: Green Valley"
+                        required>
+
+                </div>
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Building Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="building_name"
+                        placeholder="Example: Tower A">
+
+                </div>
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Unit Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="unit_number"
+                        placeholder="Example: A-101"
+                        required>
+
+                </div>
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Property Type
+                    </label>
+
+                    <select name="property_type"
+                            required>
+
+                        <option value="">
+                            Select type
+                        </option>
+
+                        <option value="Apartment">
+                            Apartment
+                        </option>
+
+                        <option value="Villa">
+                            Villa
+                        </option>
+
+                        <option value="Plot">
+                            Plot
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Price
+                    </label>
+
+                    <input
+                        type="number"
+                        name="price"
+                        placeholder="Enter price"
+                        min="0"
+                        required>
+
+                </div>
+
+
+                <div class="property-form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select name="status">
+
+                        <option value="Available">
+                            Available
+                        </option>
+
+                        <option value="Booked">
+                            Booked
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="property-form-actions">
+
+                <button type="button"
+                        class="property-cancel"
+                        onclick="closePropertyForm()">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="property-save">
+
+                    Save Property
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="{{ url_for('static', filename='properties.js') }}"></script>
+
+</body>
+</html>
